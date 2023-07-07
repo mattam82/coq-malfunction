@@ -38,13 +38,93 @@ Definition transform_compose
   (o' : t program' program'' value' value'' eval' eval'')
   (pre : forall p : program', post o p -> pre o' p) :
   forall x p1, exists p3,
-    transform (compose o o' pre) x p1 = transform o' (transform o x p1) p3.
+    transform (compose o o' pre) x p1 = transform o' (transform o x p1) p3 .
+    (*
+    /\
+    (forall v1 v2, obseq (compose o o' pre) x p1 (transform (compose o o' pre) x p1) v1 v2 <->
+      exists v, obseq o x p1 (transform o x p1) v1 v *
+        obseq o' (transform o x p1) (pre _ (correctness o x p1)) 
+          (transform o' (transform o x p1) p3) v v2).*)
 Proof.  
   cbn. intros.
   unfold run, time.
-  eexists; reflexivity.
+  eexists;reflexivity.
+Qed.
+(* 
+Definition obseq_compose
+  {program program' program'' value value' value'' : Type}
+  {eval : program -> value -> Prop} {eval' : program' -> value' -> Prop}
+  {eval'' : program'' -> value'' -> Prop}
+  (o : t program program' value value' eval eval')
+  (o' : t program' program'' value' value'' eval' eval'')
+  (pre : forall p : program', post o p -> pre o' p) :
+  forall p1 pre1 p2 v1 v2,
+    obseq (compose o o' pre) p1 pre1 p2 v1 v2 <-> 
+    exists v', obseq o p1 pre1 p' v1 v' * 
+    obseq o' p' p2 v' v2.
+Proof.  
+  cbn. intros.
+  unfold run, time. reflexivity.
+Qed. *)
+
+
+Lemma transform_compose_assoc
+  {program program' program'' program''' value value' value'' value''' : Type}
+  {eval : program -> value -> Prop} {eval' : program' -> value' -> Prop}
+  {eval'' : program'' -> value'' -> Prop}
+  {eval''' : program''' -> value''' -> Prop}
+  (o : t program program' value value' eval eval')
+  (o' : t program' program'' value' value'' eval' eval'')
+  (o'' : t program'' program''' value'' value''' eval'' eval''')
+  (prec : forall p : program', post o p -> pre o' p)
+  (prec' : forall p : program'', post o' p -> pre o'' p) :
+  forall x p1,
+    transform (compose o (compose o' o'' prec') prec) x p1 = 
+    transform (compose (compose o o' prec) o'' prec') x p1.
+Proof.  
+  cbn. intros.
+  unfold run, time.
+  f_equal. f_equal.
+  apply proof_irrelevance.
 Qed.
 
+Lemma obseq_compose_assoc
+  {program program' program'' program''' value value' value'' value''' : Type}
+  {eval : program -> value -> Prop} {eval' : program' -> value' -> Prop}
+  {eval'' : program'' -> value'' -> Prop}
+  {eval''' : program''' -> value''' -> Prop}
+  (o : t program program' value value' eval eval')
+  (o' : t program' program'' value' value'' eval' eval'')
+  (o'' : t program'' program''' value'' value''' eval'' eval''')
+  (prec : forall p : program', post o p -> pre o' p)
+  (prec' : forall p : program'', post o' p -> pre o'' p) :
+  forall x p1 p2 v1 v2, obseq (compose o (compose o' o'' prec') prec) x p1 p2 v1 v2 <-> 
+      obseq (compose (compose o o' prec) o'' prec') x p1 p2 v1 v2.
+Proof.  
+  cbn. intros.
+  unfold run, time.
+  intros. firstorder. exists x1. split.
+  exists x0. split => //. 
+  assert (correctness o' (transform o x p1)
+  (prec (transform o x p1) (correctness o x p1)) =
+  (Transform.Transform.compose_obligation_1 o o' prec x p1)). apply proof_irrelevance.
+  now rewrite -H.
+
+  exists x1. split => //.
+  exists x0. split => //.
+  assert (correctness o' (transform o x p1)
+  (prec (transform o x p1) (correctness o x p1)) =
+  (Transform.Transform.compose_obligation_1 o o' prec x p1)). apply proof_irrelevance.
+  now rewrite H.
+Qed.
+
+Import EEnvMap.GlobalContextMap.
+Lemma make_irrel Σ fr fr' : EEnvMap.GlobalContextMap.make Σ fr = EEnvMap.GlobalContextMap.make Σ fr'.
+Proof.
+  unfold make. f_equal.
+  apply proof_irrelevance.
+Qed.
+  
 Section pipeline_theorem.
 
   Fixpoint compile_value_box (t : PCUICAst.term) (acc : list EAst.term) : EAst.term :=
@@ -116,6 +196,18 @@ Section pipeline_theorem.
       let H := fresh in 
       destruct (transform_compose x y pre p pre') as [pre'' H];
       rewrite H; clear H; revert pre''
+      (* rewrite H'; clear H'; *)
+      (* revert pre'' *)
+    end.
+
+
+  Ltac destruct_compose_no_clear :=
+    match goal with
+    |- context [ transform (compose ?x ?y ?pre) ?p ?pre' ] => 
+      let pre'' := fresh in 
+      let H := fresh in 
+      destruct (transform_compose x y pre p pre') as [pre'' H];
+      rewrite H; revert pre'' H
     end.
 
   Lemma v_t_spec : v_t = (transform verified_erasure_pipeline (Σ, v) precond2).2.
@@ -123,9 +215,9 @@ Section pipeline_theorem.
     unfold v_t. generalize fo_v, precond2. clear.
     induction 1.
     intros. unfold verified_erasure_pipeline.
+    rewrite transform_compose_assoc.
 
-    repeat destruct_compose. intros.
-    destruct_compose. intros.
+    (* repeat destruct_compose. intros.
     cbn [transform rebuild_wf_env_transform].
     cbn [transform constructors_as_blocks_transformation].
     cbn [transform inline_projections_optimization].
@@ -134,8 +226,29 @@ Section pipeline_theorem.
     cbn [transform guarded_to_unguarded_fix].
     cbn [transform erase_transform].
     cbn [transform pcuic_expand_lets_transform].
-    
+     *)
   Admitted.
+
+
+
+
+  Lemma erase_program_fst {guard : abstract_guard_impl} (p p' : pcuic_program)
+	  {normalization_in : PCUICTyping.wf_ext p.1 -> PCUICSN.NormalizationIn p.1}
+	  {normalization_in' : PCUICTyping.wf_ext p'.1 -> PCUICSN.NormalizationIn p'.1}
+    {normalization_in_adjust_universes : PCUICTyping.wf_ext p.1 ->
+                                         PCUICWeakeningEnvSN.normalizationInAdjustUniversesIn p.1}
+    {normalization_in_adjust_universes' : PCUICTyping.wf_ext p'.1 ->
+    PCUICWeakeningEnvSN.normalizationInAdjustUniversesIn
+      p'.1} wt wt' :
+    p.1 = p'.1 ->
+    (erase_program p wt).1 = (erase_program p' wt').1.
+  Proof.
+    destruct p, p'; intros; subst. cbn in H. subst g0.
+    unfold erase_program.
+    assert (map_squash fst wt = map_squash fst wt') by apply proof_irrelevance.
+    rewrite -H. cbn. 
+    epose proof ErasureFunction.erase_irrel_global_env.
+  Abort.
 
   Lemma verified_erasure_pipeline_theorem :
     ∥ eval (wfl := extraction_wcbv_flags) Σ_t t_t v_t∥.
@@ -144,15 +257,35 @@ Section pipeline_theorem.
     pose proof (preservation verified_erasure_pipeline (Σ, t)) as Hcorr.
     unshelve eapply Hcorr in Heval as Hev. eapply precond.
     destruct Hev as [v' [[H1] H2]].
+    move: H2.
 
-    repeat match goal with
+    (* repeat match goal with
       [ H : obseq _ _ _ _ _ |- _ ] => hnf in H ;  decompose [ex and prod] H ; subst
-    end.
+    end. *)
     rewrite v_t_spec.
+    subst v_t Σ_t t_t.
+    revert H1.
     unfold verified_erasure_pipeline.
-    repeat destruct_compose.     
+    rewrite transform_compose_assoc.
+    intros. rewrite transform_compose_assoc.
+    rewrite obseq_compose_assoc in H2.
+    revert H1 H2. clear Hcorr.
+    intros ev obs.
+    cbn [obseq compose] in obs.
+    unfold run, time in obs.
+    decompose [ex and prod] obs. clear obs. subst.
+    cbn [obseq compose constructors_as_blocks_transformation] in *.
+    cbn [obseq run compose rebuild_wf_env_transform] in *.
+    cbn [obseq compose inline_projections_optimization] in *.
+    cbn [obseq compose remove_match_on_box_trans] in *.
+    cbn [obseq compose remove_params_optimization] in *.
+    cbn [obseq compose guarded_to_unguarded_fix] in *.
+    cbn [obseq compose erase_transform] in *.
+    cbn [obseq compose pcuic_expand_lets_transform] in *.
+    subst.
+    move: ev.
+    repeat destruct_compose.
     intros.
-    destruct_compose. intros.
     cbn [transform rebuild_wf_env_transform] in *.
     cbn [transform constructors_as_blocks_transformation] in *.
     cbn [transform inline_projections_optimization] in *.
@@ -161,10 +294,29 @@ Section pipeline_theorem.
     cbn [transform guarded_to_unguarded_fix] in *.
     cbn [transform erase_transform] in *.
     cbn [transform pcuic_expand_lets_transform] in *.
-    eapply ErasureFunction.firstorder_erases_deterministic in b0; eauto.
-    - rewrite b0 in H1. clear b0. subst v_t Σ_t t_t.
-      sq. match goal with [ H1 : eval _ _ ?v1 |- eval _ _ ?v2 ] => enough (v2 = v1) as -> by exact H1 end.
-      clear. todo "matthieu?".
+    cbn [obseq compose constructors_as_blocks_transformation] in *.
+    cbn [obseq run compose rebuild_wf_env_transform] in *.
+    cbn [obseq compose inline_projections_optimization] in *.
+    cbn [obseq compose remove_match_on_box_trans] in *.
+    cbn [obseq compose remove_params_optimization] in *.
+    cbn [obseq compose guarded_to_unguarded_fix] in *.
+    cbn [obseq compose erase_transform] in *.
+    cbn [obseq compose pcuic_expand_lets_transform] in *.
+    eapply ErasureFunction.firstorder_erases_deterministic in b7; eauto.
+    - rewrite b7 in ev. clear b7.
+      sq. match goal with [ H1 : eval _ _ ?v1 |- eval _ _ ?v2 ] => enough (v2 = v1) as -> by exact ev end.
+      clear. 
+      cbn [transform_blocks_program snd].
+      f_equal.
+      (* true, does not look at the term part *) admit.
+      cbn [rebuild_wf_env snd].
+      cbn [EInlineProjections.optimize_program snd]. f_equal. admit.
+      cbn [rebuild_wf_env snd].
+      cbn [EOptimizePropDiscr.remove_match_on_box_program snd]. f_equal. admit.
+      cbn [rebuild_wf_env snd].
+      cbn [ERemoveParams.strip_program snd]. f_equal.
+      apply erase_program_fst.
+      unfold erase_program, erase_pcuic_program. reflexivity.
     - admit.
     - admit.
     - eapply PCUICWcbvEval.value_final. admit.
