@@ -104,3 +104,9 @@ examples/prim-integers/append1_and_sort
 examples/prim-integers/append1_and_sort.mlf
 plugin/plugin-bootstrap/Makefile.bootstrap
 plugin/plugin-bootstrap/Makefile.bootstrap.conf
+examples/simple/check_lt
+examples/simple/max_to_Z
+examples/simple/test
+examples/simple/test_float
+examples/simple/val
+examples/compcert/compcert.mlf
