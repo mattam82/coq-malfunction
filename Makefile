@@ -1,5 +1,11 @@
-undefine COQPATH
-PREFIX=${out}
+ifeq (3.82,$(firstword $(sort $(MAKE_VERSION) 3.82)))
+  # stuff that requires make-3.82 or higher
+  undefine COQPATH
+endif
+ifdef out
+	PREFIX=${out}
+	INSTALLOPT="--prefix=${PREFIX} --libdir ${OCAMLFIND_DESTDIR}"
+endif
 
 all: rocq extraction_plugin extraction_ocaml_ffi plugin bootstrap
 
@@ -16,8 +22,8 @@ install: install-rocq plugin
 
 install-rocq: Makefile.rocq rocq
 	+$(MAKE) -f Makefile.rocq install
-	cd lib/rocq_verified_extraction_ocaml_ffi && dune install --prefix=${PREFIX} --libdir ${OCAMLFIND_DESTDIR}
-	cd lib/rocq_verified_extraction_plugin && dune install --prefix=${PREFIX} --libdir ${OCAMLFIND_DESTDIR}
+	cd lib/rocq_verified_extraction_ocaml_ffi && dune install ${INSTALLOPT}
+	cd lib/rocq_verified_extraction_plugin && dune install ${INSTALLOPT}
 	cd plugin/plugin && $(MAKE) -f Makefile.rocq install
 	cd plugin/plugin-bootstrap && $(MAKE) -f Makefile.rocq install
 
