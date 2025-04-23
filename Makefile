@@ -2,9 +2,10 @@ ifeq (3.82,$(firstword $(sort $(MAKE_VERSION) 3.82)))
   # stuff that requires make-3.82 or higher
   undefine COQPATH
 endif
-ifdef out
-	PREFIX=${out}
-	INSTALLOPT="--prefix=${PREFIX} --libdir ${OCAMLFIND_DESTDIR}"
+ifeq ($(out),)
+else
+	PREFIX=$(out)
+	INSTALLOPT=--prefix=${PREFIX} --libdir ${OCAMLFIND_DESTDIR}
 endif
 
 all: rocq extraction_plugin extraction_ocaml_ffi plugin bootstrap
