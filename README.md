@@ -87,5 +87,5 @@ It won't output declarations for `unit`, `bool`, `list`, `option` and `prod` tha
 The project is developed by Yannick Forster, Matthieu Sozeau, Pierre-Marie Pédrot, and Nicolas Tabareau.
 
 ```
-Copyright (c) 2022--2024 Yannick Forster, Matthieu Sozeau, Nicolas Tabareau
+Copyright (c) 2022--2025 Yannick Forster, Matthieu Sozeau, Nicolas Tabareau
 ```
