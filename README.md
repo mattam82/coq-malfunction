@@ -7,8 +7,10 @@ In particular, Rocq programs extracted like this can interact with other OCaml p
 
 The implementation of extraction is fully functional and supports all of Rocq's constructs including
 primitive integers, floats and arrays, but the cofixpoint to lazy/force translations is not verified yet.
-The article ["Verified Extraction from Coq to OCaml"](https://dl.acm.org/doi/10.1145/3656379) published and awarded at PLDI'24 
-describes this development.
+The article ["Verified Extraction from Coq to OCaml"](https://dl.acm.org/doi/10.1145/3656379) by Yannick Forster,
+Matthieu Sozean and Nicolas Tabareau, published and awarded at PLDI'24, describes this development.
+
+See the online [documentation](https://metarocq.github.io/rocq-verified-extraction-9.0/toc.html) for more information on the development.
 
 ## Installation
 
