@@ -721,7 +721,7 @@ Proof.
     pose proof (leb_length _ (deref ih ptr')).
     case_eq ((0 <=? n')%Z); intro; simpl; try econstructor.
     case_eq (n' <? Z.of_nat (Datatypes.length arr))%Z;
-      case_eq (n' <? φ (PArray.length (deref ih ptr'))%uint63)%Z; intros.
+      case_eq (n' <? (φ (PArray.length (deref ih ptr')))%uint63)%Z; intros.
     + assert (Hn': (0 <= n' < Int63.wB)%Z).
       {split; [lia|]. clear -H3 H4 H6.
        apply leb_spec in H3. apply Z.ltb_lt in H6.

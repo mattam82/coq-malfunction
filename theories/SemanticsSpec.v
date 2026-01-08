@@ -611,7 +611,7 @@ forall P : Ident.Map.t -> heap -> t -> heap -> value -> Prop,
        (forall (locals : Ident.Map.t) (h : heap) (nm : Ident.t) (v : value),
         In (nm, v) globals -> P locals h (Mglobal nm) h v) ->
        (forall (locals : Ident.Map.t) (n : Malfunction.int) (h : heap),
-        P locals h (Mnum (numconst_Int n)) h (value_Int (Int, φ (n)%uint63))) ->
+        P locals h (Mnum (numconst_Int n)) h (value_Int (Int, φ (n))%uint63)) ->
        (forall (locals : Ident.Map.t) (n : Z) (h : heap),
         P locals h (Mnum (numconst_Bigint n)) h (value_Int (Bigint, n))) ->
        (forall (locals : Ident.Map.t) (f21 : float) (h : heap),
