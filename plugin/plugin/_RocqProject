@@ -158,6 +158,8 @@ extraction/resultMonad.ml
 extraction/resultMonad.mli
 extraction/semanticsSpec.ml
 extraction/semanticsSpec.mli
+extraction/serialize_util.ml
+extraction/serialize_util.mli
 extraction/serialize.ml
 extraction/serialize.mli
 extraction/show.ml

@@ -102,6 +102,7 @@ CeresSerialize
 Sint63
 Malfunction
 Compile
+Serialize_util
 Serialize
 SemanticsSpec
 Pipeline
