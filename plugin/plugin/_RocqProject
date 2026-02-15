@@ -58,6 +58,8 @@ extraction/eRemoveParams.ml
 extraction/eRemoveParams.mli
 extraction/eReorderCstrs.ml
 extraction/eReorderCstrs.mli
+extraction/eRemapInductives.mli
+extraction/eRemapInductives.ml
 extraction/eSpineView.ml
 extraction/eSpineView.mli
 extraction/eTransform.ml

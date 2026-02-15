@@ -4,13 +4,19 @@ type inductives_mapping = inductive_mapping list
 type unsafe_passes = 
   { cofix_to_lazy : bool;
     inlining : bool;
+    inductives_extraction : bool;
     unboxing : bool;
     betared : bool }
+
+type extract_inductive = { cstrs : Kernames.kername list; elim : Kernames.kername }
+
+type extract_inductives = (Kernames.inductive * extract_inductive) list
 
 type erasure_configuration = { 
   enable_unsafe : unsafe_passes;
   enable_typed_erasure : bool;
-  inlined_constants : Kernames.KernameSet.t }
+  inlined_constants : Kernames.KernameSet.t;
+  extracted_inductives : extract_inductives }
 
 type prim_def =
 | Global of string * string
@@ -35,6 +41,7 @@ type unsafe_pass =
   | Inlining
   | Unboxing
   | BetaRed
+  | InductivesExtraction
 
 type malfunction_command_args =
   | Unsafe of unsafe_pass list
@@ -60,6 +67,7 @@ val extract_inductive : Kernames.inductive -> string * int list -> inductive_map
 type package = string
 
 val register_inductives : inductives_mapping -> unit
+val register_constant_inductives : extract_inductives -> unit
 val register_inlines : Kernames.kername list -> unit
 val register : prim list -> package list -> unit
 

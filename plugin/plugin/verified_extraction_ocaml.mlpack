@@ -81,6 +81,7 @@ OptimizePropDiscr
 EInlineProjections
 EConstructorsAsBlocks
 ECoInductiveToInductive
+ERemapInductives
 EReorderCstrs
 EUnboxing
 EImplementBox
