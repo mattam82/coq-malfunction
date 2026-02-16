@@ -4,17 +4,23 @@ type inductives_mapping = inductive_mapping list
 type unsafe_passes = 
   { cofix_to_lazy : bool;
     inlining : bool;
-    inductives_extraction : bool;
     unboxing : bool;
-    betared : bool }
+    inductives_extraction : bool;
+    betared : bool; }
 
 type extract_inductive = { cstrs : Kernames.kername list; elim : Kernames.kername }
 
 type extract_inductives = (Kernames.inductive * extract_inductive) list
 
+type dearging_config =
+  { overridden_masks : Kernames.kername -> bool list option;
+    do_trim_const_masks : bool;
+    do_trim_ctor_masks : bool; }
+
 type erasure_configuration = { 
   enable_unsafe : unsafe_passes;
   enable_typed_erasure : bool;
+  dearging_config : dearging_config;
   inlined_constants : Kernames.KernameSet.t;
   extracted_inductives : extract_inductives }
 
