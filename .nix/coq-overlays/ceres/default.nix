@@ -11,8 +11,8 @@
 mkCoqDerivation {
 
   pname = "ceres";
-  repo = "coq-ceres";
-  owner = "4ever2";
+  repo = "rocq-ceres-bytestring";
+  owner = "peregrine-project";
 
   inherit version;
   defaultVersion =
