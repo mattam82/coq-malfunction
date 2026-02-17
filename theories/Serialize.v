@@ -291,10 +291,15 @@ Definition global_serializer (prims : primitives) : Serialize (Ident.t * option 
     end
   end.
 
+(** Remove erased primitives from the environment and override existing erasures if
+  a primitive of the same name is introduced. *)
 Fixpoint filter_erased_prims prims (l : list (Ident.t * option t)) : list (Ident.t * option t) :=
   match l with
   | nil => nil
-  | cons ((id, Some _) as x) xs => x :: filter_erased_prims prims xs
+  | cons ((id, Some _) as x) xs =>
+      let tl := filter_erased_prims prims xs in
+      if find_prim id prims then (id, None) :: tl
+      else x :: tl
   | cons ((id, None) as x) xs =>
     match find_prim id prims with
     | Some Erased => filter_erased_prims prims xs

@@ -31,7 +31,7 @@ Verified Extract Constants [
 Packages [ "rocq_verified_extraction_ocaml_ffi" ].
 
 Verified Extract Inductives To Constants
-  [ nat => [ bigzero bigsucc | bigcase ] ].
+  [ nat => [ [ bigzero bigsucc | bigcase ] ] ].
 
 Definition foo (x : nat) :=
   match x + 1 with
@@ -83,3 +83,19 @@ Definition show_test2_bigeq :=
 Verified Extraction -fmt -compile-with-coq -time
   -unsafe extract-inductives
   -run show_test2_bigeq "extract_nat_zarith_bigeq.mlf".
+
+(* Rebinding Nat.add, Nat.mul and Nat.pow to zarith *)
+
+Definition show_test3_bigeq :=
+  let test := Nat.pow 2 30 in
+  print_string (show (Nat.eqb test test)).
+
+Verified Extract Constants [
+  Nat.add => "Rocq_verified_extraction_ocaml_ffi__Zarith_nat.add",
+  Nat.mul => "Rocq_verified_extraction_ocaml_ffi__Zarith_nat.mul",
+  Nat.pow => "Rocq_verified_extraction_ocaml_ffi__Zarith_nat.pow",
+  Nat.eqb => "Rocq_verified_extraction_ocaml_ffi__Zarith_nat.equal" ].
+
+Timeout 1 Verified Extraction -fmt -compile-with-coq -time
+  -unsafe extract-inductives
+  -run show_test3_bigeq "extract_nat_zarith_bigpow_bigeq.mlf".

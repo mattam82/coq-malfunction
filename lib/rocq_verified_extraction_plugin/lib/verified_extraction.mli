@@ -10,7 +10,7 @@ type unsafe_passes =
 
 type extract_inductive = { cstrs : Kernames.kername list; elim : Kernames.kername }
 
-type extract_inductives = (Kernames.inductive * extract_inductive) list
+type extract_inductives = (Kernames.kername * extract_inductive list) list
 
 type dearging_config =
   { overridden_masks : Kernames.kername -> bool list option;

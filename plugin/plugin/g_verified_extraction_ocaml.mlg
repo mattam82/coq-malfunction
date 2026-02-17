@@ -45,11 +45,14 @@ let interp_unsafe uns =
     Erasure0.betared = uns.betared;
     Erasure0.inductives_extraction = uns.inductives_extraction }
 
-let interp_extracted_inductive (i, x) =
-  (i, { EProgram.cstrs = x.cstrs; EProgram.elim = x.elim })
+let interp_extracted_inductive x =
+  { EProgram.cstrs = x.cstrs; EProgram.elim = x.elim }
+
+let interp_extracted_inductives (i, x) =
+  (i, List.map interp_extracted_inductive x)
 
 let interp_extracted_inductives =
-  List.map interp_extracted_inductive
+  List.map interp_extracted_inductives
 
 let interp_pipeline_config c = 
   let { 
