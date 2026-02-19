@@ -11,17 +11,9 @@
 (** Bindings from nat to zarith GMP integers *)
 type t
 
-(* constructors *)
-val zero : t
-val succ : t -> t
-
 (* eliminator *)
 val case : t -> (unit -> 'a) -> (t -> 'a) -> 'a
 
 (* higher-level functions *)
 
 val pow : t -> t -> t
-val add : t -> t -> t
-val mul : t -> t -> t
-
-val equal : t -> t -> bool
