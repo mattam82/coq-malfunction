@@ -56,8 +56,8 @@ with (import <nixpkgs> {}).lib;
     coqPackages.coq.override.version = "9.0";
     coqPackages.equations.override.version = "1.3.1-9.0";
     
-    coqPackages.metarocq.override.version = "1.4-9.0";
-    coqPackages.ceres.override.version = "0.4.1";
+    coqPackages.metarocq.override.version = "bd3c37d83499097a9b69525106f7f272897857de";
+    coqPackages.ceres.override.version = "01bee32638df4b6180b3e9ee70beed11150a5da0";
 
     ## In some cases, light overrides are not available/enough
     ## in which case you can use either

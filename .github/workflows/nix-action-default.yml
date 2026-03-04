@@ -2,6 +2,7 @@ jobs:
   ceres:
     needs:
     - coq
+    - metarocq
     runs-on: ubuntu-latest
     steps:
     - name: Determine which commit to initially checkout
@@ -57,6 +58,10 @@ jobs:
       name: 'Building/fetching previous CI target: stdlib'
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "default"
         --argstr job "stdlib"
+    - if: steps.stepCheck.outputs.status == 'built'
+      name: 'Building/fetching previous CI target: metarocq'
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "default"
+        --argstr job "metarocq"
     - if: steps.stepCheck.outputs.status == 'built'
       name: Building/fetching current CI target
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "default"
@@ -327,4 +332,3 @@ on:
   push:
     branches:
     - master
-    - rocq-9.0
