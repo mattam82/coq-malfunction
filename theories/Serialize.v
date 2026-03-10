@@ -6,9 +6,7 @@ Require Import Malfunction.Malfunction.
 Require Import Malfunction.Serialize_util.
 
 Set Warnings "-masking-absolute-name".
-Require Import Ceres.Ceres.
-Require Import Ceres.CeresString.
-Require Import Ceres.CeresFormat Ceres.CeresSerialize.
+From CeresBS Require Import Ceres CeresString CeresFormat CeresSerialize.
 
 Local Open Scope sexp.
 Local Open Scope bs_scope.
