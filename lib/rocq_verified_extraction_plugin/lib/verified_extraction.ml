@@ -222,7 +222,7 @@ let register_inductives (inds : inductives_mapping) : unit =
 
 let get_global_inductives_mapping () = !global_inductive_registers
 
-(* Extract Inductive *)
+(* Extract Inductive to Constants *)
 
 let global_inductive_constant_registers =
   Summary.ref ([] : extract_inductives) ~name:"Verified Extraction Inductive to Constants Registration"
